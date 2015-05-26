@@ -1,0 +1,24 @@
+{
+  "id": "rooms",
+  "name": "Rooms",
+  "description": "Create rooms for video conferences.",
+  "keywords": ["rooms", "conference"],
+  "version": "0.1.0",
+  "authors": [
+    {
+      "name": "Travis James"
+    }
+  ],
+  "homepage": "https://github.com/tribemedia/humhub-modules-rooms",
+  "time": "2015-05-24",
+  "humhub": {
+    "minVersion": "0.8"
+  },
+  "screenshots": ["assets/screen1.jpg"],
+  "docs": [
+    {
+      "name": "Description",
+      "file": "description.md"
+    }
+  ]
+}
