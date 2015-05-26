@@ -1,6 +1,6 @@
 ## Description
 
-Room for chat and video conference.
+Room for chat and video conference. (WORK IN PROGRESS--not yet fully functional)
 
 __Module website:__ <https://github.com/tribemedia/humhub-modules-rooms>   
 __Author:__ gqadonis  
