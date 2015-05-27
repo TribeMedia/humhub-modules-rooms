@@ -21,4 +21,31 @@ class RoomsEvents {
 
         // Check for Admin Menu Pages to insert
     }
+
+    public static function onTopMenuInit($event)
+    {
+        $event->sender->addItemGroup(array(
+            'id' => 'rooms',
+            'label' => Yii::t('RoomsModule.widgets_AccountMenuWidget', 'Rooms'),
+            'sortOrder' => 100,
+        ));
+
+        $memberships = RoomMembership::GetUserRooms();
+        if (count($memberships) > 0) {
+
+            foreach($memberships as $member) {
+                $event->sender->addItem(array(
+                    'label' => $member->room->name,
+                    'url' => Yii::app()->createUrl('//rooms/room/view', array('id' => $member->room->id)),
+                    'group' => 'rooms',
+                ));
+            }
+        }
+
+        $event->sender->addItem(array(
+            'label' => 'Create Room',
+            'url' => Yii::app()->createUrl('//rooms/room/create'),
+            'group' => 'rooms',
+        ));
+    }
 }

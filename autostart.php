@@ -14,6 +14,7 @@ Yii::app()->moduleManager->register(array(
     // Events to Catch
     'events' => array(
         array('class' => 'AdminMenuWidget', 'event' => 'onInit', 'callback' => array('RoomsEvents', 'onAdminMenuInit')),
+        array('class' => 'TopMenuWidget', 'event' => 'onInit', 'callback' => array('RoomsEvents', 'onTopMenuInit')),
         array('class' => 'User', 'event' => 'onBeforeDelete', 'callback' => array('RoomsModule', 'onUserDelete')),
         array('class' => 'HSearchComponent', 'event' => 'onRebuild', 'callback' => array('RoomsModule', 'onSearchRebuild')),
     ),
