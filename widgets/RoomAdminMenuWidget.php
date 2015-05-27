@@ -16,7 +16,7 @@ class RoomAdminMenuWidget extends MenuWidget
     {
 
         /**
-         * Backward compatibility - try to auto load space based on current
+         * Backward compatibility - try to auto load room based on current
          * controller.
          */
         if ($this->room === null) {
@@ -31,11 +31,11 @@ class RoomAdminMenuWidget extends MenuWidget
         ));
 
         // check user rights
-        if ($this->space->isAdmin()) {
+        if ($this->room->isAdmin()) {
             $this->addItem(array(
                 'label' => Yii::t('RoomsModule.widgets_RoomAdminMenuWidget', 'General'),
                 'group' => 'admin',
-                'url' => $this->space->createUrl('//rooms/admin/edit'),
+                'url' => $this->room->createUrl('//rooms/admin/edit'),
                 'icon' => '<i class="fa fa-cogs"></i>',
                 'sortOrder' => 100,
                 'isActive' => (Yii::app()->controller->id == "admin" && Yii::app()->controller->action->id == "edit"),
@@ -43,11 +43,11 @@ class RoomAdminMenuWidget extends MenuWidget
         }
 
         // check user rights
-        if ($this->space->isAdmin()) {
+        if ($this->room->isAdmin()) {
             $this->addItem(array(
                 'label' => Yii::t('RoomsModule.widgets_RoomAdminMenuWidget', 'Members'),
                 'group' => 'admin',
-                'url' => $this->space->createUrl('//rooms/admin/members'),
+                'url' => $this->room->createUrl('//rooms/admin/members'),
                 'icon' => '<i class="fa fa-group"></i>',
                 'sortOrder' => 200,
                 'isActive' => (Yii::app()->controller->id == "admin" && Yii::app()->controller->action->id == "members"),
@@ -55,11 +55,11 @@ class RoomAdminMenuWidget extends MenuWidget
         }
 
         // check user rights
-        if ($this->space->isAdmin()) {
+        if ($this->room->isAdmin()) {
             $this->addItem(array(
                 'label' => Yii::t('RoomsModule.widgets_RoomAdminMenuWidget', 'Modules'),
                 'group' => 'admin',
-                'url' => $this->space->createUrl('//rooms/admin/modules'),
+                'url' => $this->room->createUrl('//rooms/admin/modules'),
                 'icon' => '<i class="fa fa-rocket"></i>',
                 'sortOrder' => 300,
                 'isActive' => (Yii::app()->controller->id == "admin" && Yii::app()->controller->action->id == "modules"),

@@ -44,5 +44,7 @@ class m151524_234726_initial extends EDbMigration {
 
         $this->insert('setting', array('name'=>'defaultVisibility', 'module_id'=>'rooms', 'value'=>'1'));
         $this->insert('setting', array('name'=>'defaultJoinPolicy', 'module_id'=>'rooms', 'value'=>'1'));
+
+        $this->addColumn('notification', 'room_id', 'int(11)');
     }
 }

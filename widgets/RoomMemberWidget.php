@@ -9,7 +9,7 @@
 class RoomMemberWidget extends HWidget
 {
 
-    public $space;
+    public $room;
 
     public function run()
     {

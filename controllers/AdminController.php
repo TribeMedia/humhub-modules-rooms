@@ -11,13 +11,13 @@ class AdminController extends Controller {
     /**
      * @var String Admin Sublayout
      */
-    //public $subLayout = "application.modules.rooms.views.room._layout";
-    public $subLayout = "application.modules_core.admin.views._layout";
+    public $subLayout = "application.modules.rooms.views.room._layout";
+    //public $subLayout = "application.modules_core.admin.views._layout";
 
     /**
-     * Shows all available spaces
+     * Shows all available rooms
      */
-    public function actionIndex()
+    /*public function actionIndex()
     {
 
         $model = new Room('search');
@@ -29,6 +29,28 @@ class AdminController extends Controller {
         $this->render('index', array(
             'model' => $model
         ));
+    }*/
+
+    /**
+     * Add mix-ins to this model
+     *
+     * @return type
+     */
+    public function behaviors()
+    {
+        return array(
+            'ProfileControllerBehavior' => array(
+                'class' => 'application.modules.rooms.behaviors.RoomsControllerBehavior',
+            ),
+        );
+    }
+
+    /**
+     * First Admin Action to display
+     */
+    public function actionIndex()
+    {
+        $this->redirect($this->createUrl('edit', array('sguid' => $this->getRoom()->guid)));
     }
 
     public function actionSettings()
@@ -58,5 +80,35 @@ class AdminController extends Controller {
         }
 
         $this->render('settings', array('model' => $form));
+    }
+
+    /**
+     * Space Edit Form
+     *
+     * @todo Add Owner Switch Box for the Owner only!
+     */
+    public function actionEdit()
+    {
+
+        $model = $this->getRoom();
+        $model->scenario = 'edit';
+
+        // Ajax Validation
+        if (isset($_POST['ajax']) && $_POST['ajax'] === 'room-edit-form') {
+            echo CActiveForm::validate($model);
+            Yii::app()->end();
+        }
+
+        if (isset($_POST['Room'])) {
+            $_POST['Room'] = Yii::app()->input->stripClean($_POST['Room']);
+            $model->attributes = $_POST['Room'];
+            if ($model->validate()) {
+                $model->save();
+                Yii::app()->user->setFlash('data-saved', Yii::t('SpaceModule.controllers_AdminController', 'Saved'));
+                $this->redirect($model->createUrl('admin/edit'));
+            }
+        }
+
+        $this->render('edit', array('model' => $model));
     }
 }

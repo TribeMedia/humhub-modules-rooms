@@ -12,7 +12,7 @@ class RoomModelMembershipBehavior extends CActiveRecordBehavior
     private $_spaceOwner = null;
 
     /**
-     * Checks if given Userid is Member of this Space.
+     * Checks if given Userid is Member of this Room.
      *
      * @param type $userId
      * @return type
@@ -26,14 +26,14 @@ class RoomModelMembershipBehavior extends CActiveRecordBehavior
 
         $membership = $this->getMembership($userId);
 
-        if ($membership != null && $membership->status == SpaceMembership::STATUS_MEMBER)
+        if ($membership != null && $membership->status == RoomMembership::STATUS_MEMBER)
             return true;
 
         return false;
     }
 
     /**
-     * Checks if given Userid is Admin of this Space.
+     * Checks if given Userid is Admin of this Room.
      *
      * If no UserId is given, current UserId will be used
      *
@@ -49,12 +49,12 @@ class RoomModelMembershipBehavior extends CActiveRecordBehavior
         if (Yii::app()->user->isAdmin())
             return true;
 
-        if ($this->isSpaceOwner($userId))
+        if ($this->isRoomOwner($userId))
             return true;
 
         $membership = $this->getMembership($userId);
 
-        if ($membership != null && $membership->admin_role == 1 && $membership->status == SpaceMembership::STATUS_MEMBER)
+        if ($membership != null && $membership->admin_role == 1 && $membership->status == RoomMembership::STATUS_MEMBER)
             return true;
 
         return false;
@@ -66,7 +66,7 @@ class RoomModelMembershipBehavior extends CActiveRecordBehavior
      * @param type $userId
      * @return type
      */
-    public function setSpaceOwner($userId = "")
+    public function setRoomOwner($userId = "")
     {
 
         if ($userId == 0)
@@ -87,7 +87,7 @@ class RoomModelMembershipBehavior extends CActiveRecordBehavior
      *
      * @return type
      */
-    public function getSpaceOwner()
+    public function getRoomOwner()
     {
 
         if ($this->_spaceOwner != null) {
@@ -99,14 +99,14 @@ class RoomModelMembershipBehavior extends CActiveRecordBehavior
     }
 
     /**
-     * Is given User owner of this Space
+     * Is given User owner of this Room
      */
-    public function isSpaceOwner($userId = "")
+    public function isRoomOwner($userId = "")
     {
         if ($userId == "")
             $userId = Yii::app()->user->id;
 
-        if ($this->getSpaceOwner()->id == $userId) {
+        if ($this->getRoomOwner()->id == $userId) {
             return true;
         }
 
@@ -135,7 +135,7 @@ class RoomModelMembershipBehavior extends CActiveRecordBehavior
     }
 
     /**
-     * Returns the SpaceMembership Record for this Space
+     * Returns the RoomMembership Record for this Room
      *
      * If none Record is found, null is given
      */
@@ -144,13 +144,13 @@ class RoomModelMembershipBehavior extends CActiveRecordBehavior
         if ($userId == "")
             $userId = Yii::app()->user->id;
 
-        $rCacheId = 'SpaceMembership_' . $userId . "_" . $this->getOwner()->id;
+        $rCacheId = 'RoomMembership_' . $userId . "_" . $this->getOwner()->id;
         $rCacheRes = RuntimeCache::Get($rCacheId);
 
         if ($rCacheRes != null)
             return $rCacheRes;
 
-        $dbResult = SpaceMembership::model()->findByAttributes(array('user_id' => $userId, 'space_id' => $this->getOwner()->id));
+        $dbResult = RoomMembership::model()->findByAttributes(array('user_id' => $userId, 'room_id' => $this->getOwner()->id));
         RuntimeCache::Set($rCacheId, $dbResult);
 
         return $dbResult;
@@ -211,28 +211,28 @@ class RoomModelMembershipBehavior extends CActiveRecordBehavior
     {
 
         // Add Membership
-        $membership = new SpaceMembership;
-        $membership->space_id = $this->getOwner()->id;
+        $membership = new RoomMembership;
+        $membership->room_id = $this->getOwner()->id;
         $membership->user_id = $userId;
-        $membership->status = SpaceMembership::STATUS_APPLICANT;
+        $membership->status = RoomMembership::STATUS_APPLICANT;
         $membership->invite_role = 0;
         $membership->admin_role = 0;
         $membership->share_role = 0;
         $membership->request_message = $message;
         $membership->save();
 
-        SpaceApprovalRequestNotification::fire($userId, $this->getOwner());
+        RoomApprovalRequestNotification::fire($userId, $this->getOwner());
     }
 
     /**
-     * Returns the Admins of this Space
+     * Returns the Admins of this Room
      */
     public function getAdmins()
     {
 
         $admins = array();
 
-        $adminMemberships = SpaceMembership::model()->findAllByAttributes(array('space_id' => $this->getOwner()->id, 'admin_role' => 1));
+        $adminMemberships = RoomMembership::model()->findAllByAttributes(array('room_id' => $this->getOwner()->id, 'admin_role' => 1));
 
         foreach ($adminMemberships as $admin) {
             $admins[] = $admin->user;
@@ -258,38 +258,38 @@ class RoomModelMembershipBehavior extends CActiveRecordBehavior
         if ($membership != null) {
 
             // User is already member
-            if ($membership->status == SpaceMembership::STATUS_MEMBER) {
+            if ($membership->status == RoomMembership::STATUS_MEMBER) {
                 return;
             }
 
             // User requested already membership, just approve him
-            if ($membership->status == SpaceMembership::STATUS_APPLICANT) {
-                $space->addMember(Yii::app()->user->id);
+            if ($membership->status == RoomMembership::STATUS_APPLICANT) {
+                $membership->addMember(Yii::app()->user->id);
                 return;
             }
 
             // Already invite, reinvite him
-            if ($membership->status == SpaceMembership::STATUS_INVITED) {
+            if ($membership->status == RoomMembership::STATUS_INVITED) {
                 // Remove existing notification
-                SpaceInviteNotification::remove($userId, $this->getOwner());
+                RoomInviteNotification::remove($userId, $this->getOwner());
             }
         } else {
-            $membership = new SpaceMembership;
+            $membership = new RoomMembership;
         }
 
 
-        $membership->space_id = $this->getOwner()->id;
+        $membership->room_id = $this->getOwner()->id;
         $membership->user_id = $userId;
         $membership->originator_user_id = $originatorUserId;
 
-        $membership->status = SpaceMembership::STATUS_INVITED;
+        $membership->status = RoomMembership::STATUS_INVITED;
         $membership->invite_role = 0;
         $membership->admin_role = 0;
         $membership->share_role = 0;
 
         $membership->save();
 
-        SpaceInviteNotification::fire($originatorUserId, $userId, $this->getOwner());
+        RoomInviteNotification::fire($originatorUserId, $userId, $this->getOwner());
     }
 
     /**
@@ -308,47 +308,47 @@ class RoomModelMembershipBehavior extends CActiveRecordBehavior
 
         if ($membership == null) {
             // Add Membership
-            $membership = new SpaceMembership;
-            $membership->space_id = $this->getOwner()->id;
+            $membership = new RoomMembership;
+            $membership->room_id = $this->getOwner()->id;
             $membership->user_id = $userId;
-            $membership->status = SpaceMembership::STATUS_MEMBER;
+            $membership->status = RoomMembership::STATUS_MEMBER;
             $membership->invite_role = 0;
             $membership->admin_role = 0;
             $membership->share_role = 0;
 
             $userInvite = UserInvite::model()->findByAttributes(array('email' => $user->email));
             if ($userInvite !== null && $userInvite->source == UserInvite::SOURCE_INVITE) {
-                SpaceInviteAcceptedNotification::fire($userInvite->user_originator_id, $user, $this->getOwner());
+                RoomInviteAcceptedNotification::fire($userInvite->user_originator_id, $user, $this->getOwner());
             }
         } else {
 
             // User is already member
-            if ($membership->status == SpaceMembership::STATUS_MEMBER) {
+            if ($membership->status == RoomMembership::STATUS_MEMBER) {
                 return true;
             }
 
             // User requested membership
-            if ($membership->status == SpaceMembership::STATUS_APPLICANT) {
-                SpaceApprovalRequestAcceptedNotification::fire(Yii::app()->user->id, $user, $this->getOwner());
+            if ($membership->status == RoomMembership::STATUS_APPLICANT) {
+                RoomApprovalRequestAcceptedNotification::fire(Yii::app()->user->id, $user, $this->getOwner());
             }
 
             // User was invited
-            if ($membership->status == SpaceMembership::STATUS_INVITED) {
-                SpaceInviteAcceptedNotification::fire($membership->originator_user_id, $user, $this->getOwner());
+            if ($membership->status == RoomMembership::STATUS_INVITED) {
+                RoomInviteAcceptedNotification::fire($membership->originator_user_id, $user, $this->getOwner());
             }
 
             // Update Membership
-            $membership->status = SpaceMembership::STATUS_MEMBER;
+            $membership->status = RoomMembership::STATUS_MEMBER;
         }
         $membership->save();
 
         // Create Wall Activity for that
         $activity = new Activity;
-        $activity->content->space_id = $this->getOwner()->id;
+        $activity->content->room_id = $this->getOwner()->id;
         $activity->content->visibility = Content::VISIBILITY_PRIVATE;
         $activity->content->created_by = $this->getOwner()->id;
         $activity->created_by = $userId;
-        $activity->type = "ActivitySpaceMemberAdded";
+        $activity->type = "ActivityRoomMemberAdded";
         $activity->save();
         $activity->fire();
 
@@ -356,8 +356,8 @@ class RoomModelMembershipBehavior extends CActiveRecordBehavior
         $this->getOwner()->unfollow($userId);
 
         // Cleanup Notifications
-        SpaceInviteNotification::remove($userId, $this->getOwner());
-        SpaceApprovalRequestNotification::remove($userId, $this->getOwner());
+        RoomInviteNotification::remove($userId, $this->getOwner());
+        RoomApprovalRequestNotification::remove($userId, $this->getOwner());
     }
 
     /**
@@ -375,7 +375,7 @@ class RoomModelMembershipBehavior extends CActiveRecordBehavior
         $membership = $this->getMembership($userId);
 
 
-        if ($this->isSpaceOwner($userId)) {
+        if ($this->isRoomOwner($userId)) {
             return false;
         }
 
@@ -384,32 +384,32 @@ class RoomModelMembershipBehavior extends CActiveRecordBehavior
         }
 
         // If was member, create a activity for that
-        if ($membership->status == SpaceMembership::STATUS_MEMBER) {
+        if ($membership->status == RoomMembership::STATUS_MEMBER) {
             $activity = new Activity;
-            $activity->content->space_id = $this->getOwner()->id;
+            $activity->content->room_id = $this->getOwner()->id;
             $activity->content->visibility = Content::VISIBILITY_PRIVATE;
-            $activity->type = "ActivitySpaceMemberRemoved";
+            $activity->type = "ActivityRoomMemberRemoved";
             $activity->created_by = $userId;
             $activity->save();
             $activity->fire();
         }
 
         // Was invited, but declined the request
-        if ($membership->status == SpaceMembership::STATUS_INVITED) {
-            SpaceInviteDeclinedNotification::fire($membership->originator_user_id, $user, $this->getOwner());
+        if ($membership->status == RoomMembership::STATUS_INVITED) {
+            RoomInviteDeclinedNotification::fire($membership->originator_user_id, $user, $this->getOwner());
         }
 
-        foreach (SpaceMembership::model()->findAllByAttributes(array(
+        foreach (RoomMembership::model()->findAllByAttributes(array(
             'user_id' => $userId,
-            'space_id' => $this->getOwner()->id,
+            'room_id' => $this->getOwner()->id,
         )) as $membership) {
             $membership->delete();
         }
 
         // Cleanup Notifications
-        SpaceApprovalRequestNotification::remove($userId, $this->getOwner());
-        SpaceInviteNotification::remove($userId, $this->getOwner());
-        SpaceApprovalRequestNotification::remove($userId, $this->getOwner());
+        RoomApprovalRequestNotification::remove($userId, $this->getOwner());
+        RoomInviteNotification::remove($userId, $this->getOwner());
+        RoomApprovalRequestNotification::remove($userId, $this->getOwner());
     }
 
 }
