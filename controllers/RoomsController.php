@@ -278,7 +278,7 @@ class RoomsController extends ContentContainerController {
 
     public function actionList() {
         $criteria = new CDbCriteria();
-        if (HSetting::Get('spaceOrder', 'room') == 0) {
+        if (HSetting::Get('roomOrder', 'room') == 0) {
             $criteria->order = 'name ASC';
         } else {
             $criteria->order = 'last_visit DESC';

@@ -15,17 +15,17 @@ $(document).ready(function () {
      */
     $('#room-menu').click(function () {
 
-        if (jQuery('#room-menu-spaces').hasClass('notLoaded')) {
+        if (jQuery('#room-menu-rooms').hasClass('notLoaded')) {
             // load user spaces
-            jQuery('#room-menu-spaces').removeClass('notLoaded');
+            jQuery('#room-menu-rooms').removeClass('notLoaded');
             $.ajax({
-                'url': scSpaceListUrl,
+                'url': scRoomsListUrl,
                 'cache': false,
                 'data': jQuery(this).parents("form").serialize(),
                 'success': function (html) {
 
-                    // show loaded space entries
-                    jQuery("#loader_spaces").replaceWith(html)
+                    // show loaded room entries
+                    jQuery("#loader_rooms").replaceWith(html)
 
                     // fill array with visible space entries
                     $("#room-menu-dropdown ul li").each(function (index) {
@@ -90,7 +90,7 @@ $(document).ready(function () {
         } else if (event.keyCode == 13) {
 
             // check if one space is selected
-            if ($('#room-menu-spaces li').hasClass("selected")) {
+            if ($('#room-menu-rooms li').hasClass("selected")) {
 
                 // move to selected space, by hitting enter
                 window.location.href = $('#room-menu-dropdown li ul li.selected a').attr('href');
@@ -103,10 +103,10 @@ $(document).ready(function () {
 
             if (input > 0) {
                 // remove max-height property to hide the nicescroll scrollbar
-                $('#room-menu-spaces').css({'max-height': 'none'});
+                $('#room-menu-rooms').css({'max-height': 'none'});
             } else {
                 // set max-height property to show the nicescroll scrollbar
-                $('#room-menu-spaces').css({'max-height': '400px'});
+                $('#room-menu-rooms').css({'max-height': '400px'});
             }
 
             // empty variable and array
@@ -177,13 +177,13 @@ $(document).ready(function () {
      * Click handler to reset user input
      */
     $('#room-search-reset').click(function () {
-        resetSpaceSearch();
+        resetRoomSearch();
     })
 
     /**
      * Reset user input
      */
-    function resetSpaceSearch() {
+    function resetRoomSearch() {
 
         // fade out the cross icon
         $('#room-search-reset').fadeOut('fast');
@@ -208,7 +208,7 @@ $(document).ready(function () {
         });
 
         // set max-height property to show the nicescroll scrollbar
-        $('#room-menu-spaces').css({'max-height': '400px'});
+        $('#room-menu-rooms').css({'max-height': '400px'});
     }
 
 });
