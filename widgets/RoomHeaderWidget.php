@@ -13,7 +13,7 @@ class RoomHeaderWidget extends HWidget
 
     public function init()
     {
-        // Only include uploading javascripts if user is space admin
+        // Only include uploading javascripts if user is room admin
         if ($this->room->isAdmin()) {
             $assetPrefix = Yii::app()->assetManager->publish(dirname(__FILE__) . '/../resources', true, 0, defined('YII_DEBUG'));
             Yii::app()->clientScript->registerScriptFile($assetPrefix . '/roomHeaderImageUpload.js');
