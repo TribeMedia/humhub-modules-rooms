@@ -112,7 +112,7 @@ class AdminController extends Controller {
                         if ($room->isRoomOwner($user->id))
                             continue;
 
-                        $membership = SpaceMembership::model()->findByAttributes(array('user_id' => $user->id, 'room_id' => $room->id));
+                        $membership = RoomMembership::model()->findByAttributes(array('user_id' => $user->id, 'room_id' => $room->id));
                         if ($membership != null) {
                             $membership->invite_role = (isset($userSettings['inviteRole']) && $userSettings['inviteRole'] == 1) ? 1 : 0;
                             $membership->admin_role = (isset($userSettings['adminRole']) && $userSettings['adminRole'] == 1) ? 1 : 0;
@@ -166,7 +166,7 @@ class AdminController extends Controller {
 
         $members = $room->memberships($criteria);
 
-        $invited_members = SpaceMembership::model()->findAllByAttributes(array('room_id' => $room->id, 'status' => SpaceMembership::STATUS_INVITED));
+        $invited_members = RoomMembership::model()->findAllByAttributes(array('room_id' => $room->id, 'status' => RoomMembership::STATUS_INVITED));
 
         $this->render('members', array(
             'room' => $room,
@@ -214,7 +214,7 @@ class AdminController extends Controller {
 
         if ($user != null) {
             $membership = $room->getMembership($user->id);
-            if ($membership != null && $membership->status == SpaceMembership::STATUS_APPLICANT) {
+            if ($membership != null && $membership->status == RoomMembership::STATUS_APPLICANT) {
                 $room->addMember($user->id);
             }
         }
