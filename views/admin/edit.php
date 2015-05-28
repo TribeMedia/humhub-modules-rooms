@@ -80,11 +80,11 @@
 
         <div class="pull-right">
             <?php if ($model->status == Room::STATUS_ENABLED) { ?>
-                <?php echo HHtml::postLink(Yii::t('RoomsModule.views_admin_edit', 'Archive'), $model->createUrl('//rooms/admin/archive'), array('class' => 'btn btn-warning')); ?>
+                <?php echo HHtml::postLink(Yii::t('RoomsModule.views_admin_edit', 'Archive'), $model->createUrl('//rooms/room/archive'), array('class' => 'btn btn-warning')); ?>
             <?php } elseif ($model->status == Room::STATUS_ARCHIVED) { ?>
-                <?php echo HHtml::postLink(Yii::t('RoomsModule.views_admin_edit', 'Unarchive'), $model->createUrl('//rooms/admin/unarchive'), array('class' => 'btn btn-warning')); ?>
+                <?php echo HHtml::postLink(Yii::t('RoomsModule.views_admin_edit', 'Unarchive'), $model->createUrl('//rooms/room/unarchive'), array('class' => 'btn btn-warning')); ?>
             <?php } ?>
-            <?php echo HHtml::postLink(Yii::t('RoomsModule.views_admin_edit', 'Delete'), $model->createUrl('//rooms/admin/delete'), array('class' => 'btn btn-danger')); ?>
+            <?php echo HHtml::postLink(Yii::t('RoomsModule.views_admin_edit', 'Delete'), $model->createUrl('//rooms/room/delete'), array('class' => 'btn btn-danger')); ?>
 
         </div>
 

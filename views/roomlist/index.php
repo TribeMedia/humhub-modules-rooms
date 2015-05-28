@@ -82,7 +82,7 @@
                 array(
                     'class' => 'CButtonColumn',
                     'template' => '{view}{update}{deleteOwn}',
-                    'viewButtonUrl' => 'Yii::app()->createUrl("//rooms/room", array("sguid"=>$data->guid));',
+                    'viewButtonUrl' => 'Yii::app()->createUrl("//rooms/view", array("sguid"=>$data->guid));',
                     'updateButtonUrl' => 'Yii::app()->createUrl("//rooms/admin/edit", array("sguid"=>$data->guid));',
                     'htmlOptions' => array('width' => '90px'),
                     'buttons' => array
@@ -117,14 +117,14 @@
                         (
                             'label' => '<i class="fa fa-times"></i>',
                             'imageUrl' => false,
-                            'url' => 'Yii::app()->createUrl("//space/admin/delete", array("sguid"=>$data->guid));',
+                            'url' => 'Yii::app()->createUrl("//rooms/room/delete", array("sguid"=>$data->guid));',
                             'deleteConfirmation' => false,
                             'options' => array(
                                 'class' => 'btn btn-danger btn-xs tt',
                                 'data-toggle' => 'tooltip',
                                 'data-placement' => 'top',
                                 'title' => '',
-                                'data-original-title' => Yii::t('AdminModule.views_space_index', 'Delete room'),
+                                'data-original-title' => Yii::t('RoomsModule.views_space_index', 'Delete room'),
                             ),
                         ),
                     ),

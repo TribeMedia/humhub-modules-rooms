@@ -18,11 +18,13 @@ $(document).ready(function () {
         if (jQuery('#room-menu-rooms').hasClass('notLoaded')) {
             // load user spaces
             jQuery('#room-menu-rooms').removeClass('notLoaded');
+
             $.ajax({
                 'url': scRoomsListUrl,
                 'cache': false,
                 'data': jQuery(this).parents("form").serialize(),
                 'success': function (html) {
+
 
                     // show loaded room entries
                     jQuery("#loader_rooms").replaceWith(html)

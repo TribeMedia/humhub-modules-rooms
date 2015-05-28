@@ -26,12 +26,12 @@ class RoomMenuWidget extends MenuWidget
         ));
 
         $this->addItem(array(
-            'label' => Yii::t('RoomsModule.widgets_RoomMenuWidget', 'Stream'),
+            'label' => Yii::t('RoomsModule.widgets_RoomMenuWidget', 'Enter'),
             'group' => 'modules',
-            'url' => Yii::app()->createUrl('//rooms/room', array('sguid' => $roomGuid)),
+            'url' => Yii::app()->createUrl('//rooms/view', array('sguid' => $roomGuid)),
             'icon' => '<i class="fa fa-bars"></i>',
             'sortOrder' => 100,
-            'isActive' => (Yii::app()->controller->id == "space" && Yii::app()->controller->action->id == "index" && Yii::app()->controller->module->id == "rooms"),
+            'isActive' => (Yii::app()->controller->id == "view" && Yii::app()->controller->action->id == "index" && Yii::app()->controller->module->id == "rooms"),
         ));
 
 #        $this->addItem(array(

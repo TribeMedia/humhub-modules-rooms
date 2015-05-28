@@ -41,6 +41,9 @@ class Room extends HActiveRecordContentContainer implements ISearchable
             'RoomModelMembershipBehavior' => array(
                 'class' => 'application.modules.rooms.behaviors.RoomModelMembershipBehavior',
             ),
+            'RoomModelModulesBehavior' => array(
+                'class' => 'application.modules.rooms.behaviors.RoomModelModulesBehavior',
+            ),
         );
     }
 
@@ -117,7 +120,7 @@ class Room extends HActiveRecordContentContainer implements ISearchable
         return array(
             // Active Invites
             'userInvites' => array(self::HAS_MANY, 'UserInvite', 'room_invite_id'),
-            // List of space applicants
+            // List of room applicants
             'applicants' => array(self::HAS_MANY, 'RoomMembership', 'room_id', 'condition' => 'status=' . RoomMembership::STATUS_APPLICANT),
             // Approved Membership Only
             'memberships' => array(self::HAS_MANY, 'RoomMembership', 'room_id',
@@ -247,13 +250,13 @@ class Room extends HActiveRecordContentContainer implements ISearchable
             $wall->save();
             $this->wall_id = $wall->id;
             $this->wall = $wall;
-            Space::model()->updateByPk($this->id, array('wall_id' => $wall->id));
+            Room::model()->updateByPk($this->id, array('wall_id' => $wall->id));
 
             // Auto add creator as admin
             $membership = new RoomMembership();
-            $membership->space_id = $this->id;
+            $membership->room_id = $this->id;
             $membership->user_id = $userId;
-            $membership->status = SpaceMembership::STATUS_MEMBER;
+            $membership->status = RoomMembership::STATUS_MEMBER;
             $membership->invite_role = 1;
             $membership->admin_role = 1;
             $membership->share_role = 1;
@@ -261,11 +264,11 @@ class Room extends HActiveRecordContentContainer implements ISearchable
 
             $activity = new Activity;
             $activity->content->created_by = $userId;
-            $activity->content->space_id = $this->id;
+            $activity->content->room_id = $this->id;
             $activity->content->user_id = $userId;
             $activity->content->visibility = Content::VISIBILITY_PUBLIC;
             $activity->created_by = $userId;
-            $activity->type = "ActivitySpaceCreated";
+            $activity->type = "ActivityRoomCreated";
             $activity->save();
             $activity->fire();
         }
@@ -281,8 +284,8 @@ class Room extends HActiveRecordContentContainer implements ISearchable
     protected function beforeDelete()
     {
 
-        foreach (RoomSetting::model()->findAllByAttributes(array('room_id' => $this->id)) as $spaceSetting) {
-            $spaceSetting->delete();
+        foreach (RoomSetting::model()->findAllByAttributes(array('room_id' => $this->id)) as $roomSetting) {
+            $roomSetting->delete();
         }
 
         // Disable all enabled modules
@@ -297,25 +300,25 @@ class Room extends HActiveRecordContentContainer implements ISearchable
         $this->getProfileImage()->delete();
 
         // Remove all Follwers
-        UserFollow::model()->deleteAllByAttributes(array('object_id' => $this->id, 'object_model' => 'Space'));
+        //UserFollow::model()->deleteAllByAttributes(array('object_id' => $this->id, 'object_model' => 'Room'));
 
         //Delete all memberships:
         //First select, then delete - done to make sure that SpaceMembership::beforeDelete() is triggered
-        $spaceMemberships = SpaceMembership::model()->findAllByAttributes(array('space_id' => $this->id));
-        foreach ($spaceMemberships as $spaceMembership) {
-            $spaceMembership->delete();
+        $roomMemberships = RoomMembership::model()->findAllByAttributes(array('room_id' => $this->id));
+        foreach ($roomMemberships as $roomMembership) {
+            $roomMembership->delete();
         }
 
         UserInvite::model()->deleteAllByAttributes(array('room_invite_id' => $this->id));
 
-        // Delete all content objects of this space
+        // Delete all content objects of this room
         foreach (Content::model()->findAllByAttributes(array('room_id' => $this->id)) as $content) {
             $content->delete();
         }
 
-        // When this workspace is used in a group as default workspace, delete the link
+        // When this room is used in a group as default room, delete the link
         foreach (Group::model()->findAllByAttributes(array('room_id' => $this->id)) as $group) {
-            $group->space_id = "";
+            $group->room_id = "";
             $group->save();
         }
 
@@ -325,7 +328,7 @@ class Room extends HActiveRecordContentContainer implements ISearchable
     }
 
     /**
-     * Indicates that this user can join this workspace
+     * Indicates that this user can join this room
      *
      * @param $userId User Id of User
      */
@@ -351,7 +354,7 @@ class Room extends HActiveRecordContentContainer implements ISearchable
     }
 
     /**
-     * Indicates that this user can join this workspace without permission
+     * Indicates that this user can join this room without permission
      *
      * @param $userId User Id of User
      */
@@ -373,7 +376,7 @@ class Room extends HActiveRecordContentContainer implements ISearchable
     }
 
     /**
-     * Check if current user can write to this workspace
+     * Check if current user can write to this room
      *
      * @param type $userId
      * @return type
@@ -381,7 +384,7 @@ class Room extends HActiveRecordContentContainer implements ISearchable
     public function canWrite($userId = "")
     {
 
-        // No writes allowed for archived workspaces
+        // No writes allowed for archived rooms
         if ($this->status == Space::STATUS_ARCHIVED)
             return false;
 
@@ -397,7 +400,7 @@ class Room extends HActiveRecordContentContainer implements ISearchable
     }
 
     /**
-     * Checks if given user can invite people to this workspace
+     * Checks if given user can invite people to this room
      *
      * @param type $userId
      * @return type
@@ -425,7 +428,7 @@ class Room extends HActiveRecordContentContainer implements ISearchable
 
     /**
      * Checks if given user can share content.
-     * Shared Content is public and is visible also for non members of the space.
+     * Shared Content is public and is visible also for non members of the room.
      *
      * @param type $userId
      * @return type
@@ -469,7 +472,7 @@ class Room extends HActiveRecordContentContainer implements ISearchable
     }
 
     /**
-     * Counts all Content Items related to this workspace except of Activities.
+     * Counts all Content Items related to this room except of Activities.
      * Additonally Comments (normally ContentAddon) will be included.
      */
     public function countItems()
@@ -483,43 +486,11 @@ class Room extends HActiveRecordContentContainer implements ISearchable
     }
 
     /**
-     * Counts all posts of current space
-     *
-     * @return Integer
-     */
-    public function countPosts()
-    {
-        /*
-          $criteria = new CDbCriteria();
-          $criteria->condition = "content.space_id=:space_id";
-          $criteria->params = array(':space_id' => $this->id);
-          return Post::model()->with('content')->count($criteria);
-         */
-        return Content::model()->countByAttributes(array('object_model' => 'Post', 'room_id' => $this->id));
-    }
-
-    /**
-     * Counts all followers of current space
-     *
-     * @return Integer
-     */
-    public function countFollowers()
-    {
-        /*
-          $criteria = new CDbCriteria();
-          $criteria->condition = "content.space_id=:space_id";
-          $criteria->params = array(':space_id' => $this->id);
-          return Post::model()->with('content')->count($criteria);
-         */
-        return Content::model()->countByAttributes(array('object_model' => 'Post', 'room_id' => $this->id));
-    }
-
-    /**
-     * Sets Comments Count for this workspace
+     * Sets Comments Count for this room
      */
     public function getCommentCount()
     {
-        $cacheId = "workspaceCommentCount_" . $this->id;
+        $cacheId = "roomCommentCount_" . $this->id;
         $cacheValue = Yii::app()->cache->get($cacheId);
 
         if ($cacheValue === false) {
@@ -560,19 +531,19 @@ class Room extends HActiveRecordContentContainer implements ISearchable
     }
 
     /**
-     * Returns the url to the space.
+     * Returns the url to the room.
      *
      * @param array $parameters
      * @return string url
      */
     public function getUrl($parameters = array())
     {
-        return $this->createUrl('//rooms/room', $parameters);
+        return $this->createUrl('//rooms/view', $parameters);
     }
 
     /**
-     * Creates an url in space scope.
-     * (Adding sguid parameter to identify current space.)
+     * Creates an url in room scope.
+     * (Adding sguid parameter to identify current room.)
      * See CController createUrl() for more details.
      *
      * @since 0.9
@@ -596,7 +567,7 @@ class Room extends HActiveRecordContentContainer implements ISearchable
     /**
      * Validator for visibility
      *
-     * Used in edit scenario to check if the user really can create spaces
+     * Used in edit scenario to check if the user really can create rooms
      * on this visibility.
      *
      * @param type $attribute
@@ -614,7 +585,7 @@ class Room extends HActiveRecordContentContainer implements ISearchable
     }
 
     /**
-     * Returns display name (title) of space
+     * Returns display name (title) of room
      *
      * @since 0.11.0
      * @return string

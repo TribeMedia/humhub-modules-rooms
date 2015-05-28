@@ -13,7 +13,7 @@ class RoomChooserWidget extends HWidget
     {
         // publish resource files
         $assetPrefix = Yii::app()->assetManager->publish(dirname(__FILE__) . '/../resources', true, 0, defined('YII_DEBUG'));
-        Yii::app()->clientScript->setJavascriptVariable('scRoomsListUrl', $this->createUrl('//rooms/list', array('ajax' => 1)));
+        Yii::app()->clientScript->setJavascriptVariable('scRoomsListUrl', $this->createUrl('//rooms/l', array('ajax' => 1)));
         Yii::app()->clientScript->registerScriptFile($assetPrefix . '/roomchooser.js');
     }
 

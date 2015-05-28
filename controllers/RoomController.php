@@ -51,6 +51,11 @@ class RoomController extends Controller {
         );
     }
 
+    public function actionIndex()
+    {
+        $this->pageTitle = $this->getRoom()->name;
+        $this->render('index', array());
+    }
 
     /**
      * Creates a new Space
@@ -78,7 +83,7 @@ class RoomController extends Controller {
             if ($model->validate() && $model->save()) {
 
                 // Save in this user variable, that the workspace was new created
-                Yii::app()->user->setState('ws', 'created');
+                Yii::app()->user->setState('r', 'created');
 
                 // Redirect to the new created Room
                 $this->htmlRedirect($model->getUrl());
@@ -86,6 +91,69 @@ class RoomController extends Controller {
         }
 
         $this->renderPartial('create', array('model' => $model), false, true);
+    }
+
+    /**
+     * Archives a workspace
+     */
+    public function actionArchive()
+    {
+        $this->forcePostRequest();
+        $this->ownerOnly();
+        $room = $this->getRoom();
+        $room->archive();
+        $this->htmlRedirect($this->createUrl('//rooms/admin/edit', array('sguid' => $room->guid)));
+    }
+
+    /**
+     * UnArchives a workspace
+     */
+    public function actionUnArchive()
+    {
+        $this->forcePostRequest();
+        $this->ownerOnly();
+        $room = $this->getRoom();
+        $room->unarchive();
+        $this->htmlRedirect($this->createUrl('//rooms/admin/edit', array('sguid' => $room->guid)));
+    }
+
+    /**
+     * Deletes this Space
+     */
+    public function actionDelete()
+    {
+        $this->ownerOnly();
+        $room = $this->getRoom();
+        $model = new RoomDeleteForm;
+        if (isset($_POST['RoomDeleteForm'])) {
+            $model->attributes = $_POST['RoomDeleteForm'];
+
+            if ($model->validate()) {
+                $room->delete();
+                $this->htmlRedirect($this->createUrl('//'));
+            }
+        }
+        $this->render('delete', array('model' => $model, 'room' => $room));
+    }
+
+    /**
+     * Request only allowed for room admins
+     */
+    public function adminOnly()
+    {
+        if (!$this->getRoom()->isAdmin())
+            throw new CHttpException(403, 'Access denied - Space Administrator only!');
+    }
+
+    /**
+     * Request only allowed for room owner
+     */
+    public function ownerOnly()
+    {
+        $room = $this->getRoom();
+
+        if (!$room->isRoomOwner() && !Yii::app()->user->isAdmin())
+            throw new CHttpException(403, 'Access denied - Space Owner only!');
     }
 
 }

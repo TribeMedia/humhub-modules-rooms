@@ -19,6 +19,18 @@ class RoomsModule extends HWebModule
         ));
     }
 
+    public function behaviors()
+    {
+        return array(
+            'SpaceModuleBehavior' => array(
+                'class' => 'application.modules_core.space.behaviors.SpaceModuleBehavior',
+            ),
+            'UserModuleBehavior' => array(
+                'class' => 'application.modules_core.user.behaviors.UserModuleBehavior',
+            ),
+        );
+    }
+
     /**
      * On rebuild of the search index, rebuild all space records
      *
@@ -31,6 +43,14 @@ class RoomsModule extends HWebModule
                 Yii::app()->search->add($obj);
             }
         }
+    }
+
+    public function isRoomModule()
+    {
+        if (array_key_exists('RoomModuleBehavior', $this->behaviors())) {
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -56,7 +76,7 @@ class RoomsModule extends HWebModule
         }
 
         // Cancel all space invites by the user
-        foreach (RoomMembership::model()->findAllByAttributes(array('originator_user_id' => $user->id, 'status' => SpaceMembership::STATUS_INVITED)) as $membership) {
+        foreach (RoomMembership::model()->findAllByAttributes(array('originator_user_id' => $user->id, 'status' => RoomMembership::STATUS_INVITED)) as $membership) {
             $membership->room->removeMember($membership->user_id);
         }
 

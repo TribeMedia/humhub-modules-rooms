@@ -112,7 +112,7 @@ class RoomsController extends ContentContainerController {
     }
 
     /**
-     * Requests Membership for this Space
+     * Requests Membership for this Room
      */
     public function actionRequestMembership()
     {
@@ -122,7 +122,7 @@ class RoomsController extends ContentContainerController {
         if (!$room->canJoin(Yii::app()->user->id))
             throw new CHttpException(500, Yii::t('RoomsModule.controllers_RoomsController', 'You are not allowed to join this space!'));
 
-        if ($room->join_policy == Space::JOIN_POLICY_APPLICATION) {
+        if ($room->join_policy == Room::JOIN_POLICY_APPLICATION) {
             // Redirect to Membership Request Form
             return $this->redirect($this->createUrl('//rooms/room/requestMembershipForm', array('sguid' => $this->getRoom()->guid)));
         }
@@ -132,7 +132,7 @@ class RoomsController extends ContentContainerController {
     }
 
     /**
-     * Requests Membership Form for this Space
+     * Requests Membership Form for this Room
      * (If a message is required.)
      *
      */
@@ -146,18 +146,18 @@ class RoomsController extends ContentContainerController {
             throw new CHttpException(500, Yii::t('RoomsModule.controllers_RoomsController', 'Could not request membership!'));
         }
 
-        $model = new SpaceRequestMembershipForm;
+        $model = new RoomRequestMembershipForm;
 
         if (isset($_POST['ajax']) && $_POST['ajax'] === 'workspace-apply-form') {
             echo CActiveForm::validate($model);
             Yii::app()->end();
         }
 
-        if (isset($_POST['SpaceRequestMembershipForm'])) {
+        if (isset($_POST['RoomRequestMembershipForm'])) {
 
-            $_POST['SpaceRequestMembershipForm'] = Yii::app()->input->stripClean($_POST['SpaceRequestMembershipForm']);
+            $_POST['RoomRequestMembershipForm'] = Yii::app()->input->stripClean($_POST['RoomRequestMembershipForm']);
 
-            $model->attributes = $_POST['SpaceRequestMembershipForm'];
+            $model->attributes = $_POST['RoomRequestMembershipForm'];
 
             if ($model->validate()) {
 
@@ -185,7 +185,7 @@ class RoomsController extends ContentContainerController {
 
         $room = $this->getRoom();
 
-        if ($room->isSpaceOwner()) {
+        if ($room->isRoomOwner()) {
             throw new CHttpException(500, Yii::t('RoomsModule.controllers_RoomsController', 'As owner you cannot revoke your membership!'));
         }
 
@@ -206,13 +206,13 @@ class RoomsController extends ContentContainerController {
             throw new CHttpException(403, 'Access denied - You cannot invite members!');
         }
 
-        $model = new SpaceInviteForm();
+        $model = new RoomInviteForm();
         $model->space = $room;
 
-        if (isset($_POST['SpaceInviteForm'])) {
+        if (isset($_POST['RoomInviteForm'])) {
 
-            $_POST['SpaceInviteForm'] = Yii::app()->input->stripClean($_POST['SpaceInviteForm']);
-            $model->attributes = $_POST['SpaceInviteForm'];
+            $_POST['RoomInviteForm'] = Yii::app()->input->stripClean($_POST['RoomInviteForm']);
+            $model->attributes = $_POST['RoomInviteForm'];
 
             if ($model->validate()) {
 
@@ -258,7 +258,7 @@ class RoomsController extends ContentContainerController {
     public function actionInviteAccept()
     {
 
-        // Get Current Space
+        // Get Current Room
         $room = $this->getRoom();
 
         // Load Pending Membership
@@ -270,7 +270,7 @@ class RoomsController extends ContentContainerController {
         // Check there are really an Invite
         if ($membership->status == RoomMembership::STATUS_INVITED) {
             $room->addMember(Yii::app()->user->id);
-            //SpaceInviteAcceptedNotification::fire($membership->originator_user_id, Yii::app()->user, $room);
+            //RoomInviteAcceptedNotification::fire($membership->originator_user_id, Yii::app()->user, $room);
         }
 
         $this->redirect($room->getUrl());
