@@ -12,10 +12,10 @@ class RoomsEvents {
     {
         $event->sender->addItem(array(
             'label' => Yii::t('RoomsModule.base', 'Rooms'),
-            'url' => Yii::app()->createUrl('//rooms/roomlist'),
+            'url' => Yii::app()->createUrl('//rooms/set'),
             'group' => 'manage',
             'icon' => '<i class="fa fa-file-code-o"></i>',
-            'isActive' => (Yii::app()->controller->module && Yii::app()->controller->module->id == 'rooms' && Yii::app()->controller->id == 'roomlist'),
+            'isActive' => (Yii::app()->controller->module && Yii::app()->controller->module->id == 'rooms' && Yii::app()->controller->id == 'set'),
             'sortOrder' => 300,
         ));
 
