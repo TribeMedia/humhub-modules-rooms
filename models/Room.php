@@ -50,7 +50,7 @@ class Room extends HActiveRecordContentContainer implements ISearchable
     /**
      * Returns the static model of the specified AR class.
      * @param string $className active record class name.
-     * @return Space the static model class
+     * @return Room the static model class
      */
     public static function model($className = __CLASS__)
     {
@@ -99,7 +99,7 @@ class Room extends HActiveRecordContentContainer implements ISearchable
             array('name, website', 'length', 'max' => 45),
             array('ldap_dn', 'length', 'max' => 255),
             array('website', 'url'),
-            array('name', 'unique', 'caseSensitive' => false, 'className' => 'Space', 'message' => '{attribute} "{value}" is already in use! '),
+            array('name', 'unique', 'caseSensitive' => false, 'className' => 'Room', 'message' => '{attribute} "{value}" is already in use! '),
             array('join_policy', 'in', 'range' => array(0, 1, 2)),
             array('visibility', 'in', 'range' => array(0, 1, 2)),
             array('status', 'in', 'range' => array(0, 1, 2)),
@@ -148,19 +148,19 @@ class Room extends HActiveRecordContentContainer implements ISearchable
         return array(
             'id' => 'ID',
             'wall_id' => 'Wall',
-            'name' => Yii::t('SpaceModule.models_Space', 'Name'),
-            'description' => Yii::t('SpaceModule.models_Space', 'Description'),
-            'website' => Yii::t('SpaceModule.models_Space', 'Website URL (optional)'),
-            'join_policy' => Yii::t('SpaceModule.models_Space', 'Join Policy'),
-            'ldap_dn' => Yii::t('SpaceModule.models_Space', 'Ldap DN'),
-            'visibility' => Yii::t('SpaceModule.models_Space', 'Visibility'),
-            'status' => Yii::t('SpaceModule.models_Space', 'Status'),
-            'tags' => Yii::t('SpaceModule.models_Space', 'Tags'),
-            'created_at' => Yii::t('SpaceModule.models_Space', 'Created At'),
-            'created_by' => Yii::t('SpaceModule.models_Space', 'Created By'),
-            'updated_at' => Yii::t('SpaceModule.models_Space', 'Updated At'),
-            'updated_by' => Yii::t('SpaceModule.models_Space', 'Updated by'),
-            'ownerUsernameSearch' => Yii::t('SpaceModule.models_Space', 'Owner'),
+            'name' => Yii::t('RoomsModule.models_Room', 'Name'),
+            'description' => Yii::t('RoomsModule.models_Room', 'Description'),
+            'website' => Yii::t('RoomsModule.models_Room', 'Website URL (optional)'),
+            'join_policy' => Yii::t('RoomsModule.models_Room', 'Join Policy'),
+            'ldap_dn' => Yii::t('RoomsModule.models_Room', 'Ldap DN'),
+            'visibility' => Yii::t('RoomsModule.models_Room', 'Visibility'),
+            'status' => Yii::t('RoomsModule.models_Room', 'Status'),
+            'tags' => Yii::t('RoomsModule.models_Room', 'Tags'),
+            'created_at' => Yii::t('RoomsModule.models_Room', 'Created At'),
+            'created_by' => Yii::t('RoomsModule.models_Room', 'Created By'),
+            'updated_at' => Yii::t('RoomsModule.models_Room', 'Updated At'),
+            'updated_by' => Yii::t('RoomsModule.models_Room', 'Updated by'),
+            'ownerUsernameSearch' => Yii::t('RoomsModule.models_Room', 'Owner'),
         );
     }
 
@@ -176,7 +176,7 @@ class Room extends HActiveRecordContentContainer implements ISearchable
                 'condition' => $this->getTableAlias() . '.status=' . self::STATUS_ENABLED,
             ),
             'visible' => array(
-                'condition' => $this->getTableAlias() . '.visibility != ' . Space::VISIBILITY_NONE,
+                'condition' => $this->getTableAlias() . '.visibility != ' . Room::VISIBILITY_NONE,
             ),
             'recently' => array(
                 'order' => $this->getTableAlias() . '.created_at DESC',
@@ -279,7 +279,7 @@ class Room extends HActiveRecordContentContainer implements ISearchable
     }
 
     /**
-     * Before deletion of a Space
+     * Before deletion of a Room
      */
     protected function beforeDelete()
     {
@@ -303,7 +303,7 @@ class Room extends HActiveRecordContentContainer implements ISearchable
         //UserFollow::model()->deleteAllByAttributes(array('object_id' => $this->id, 'object_model' => 'Room'));
 
         //Delete all memberships:
-        //First select, then delete - done to make sure that SpaceMembership::beforeDelete() is triggered
+        //First select, then delete - done to make sure that RoomsMembership::beforeDelete() is triggered
         $roomMemberships = RoomMembership::model()->findAllByAttributes(array('room_id' => $this->id));
         foreach ($roomMemberships as $roomMembership) {
             $roomMembership->delete();
@@ -385,7 +385,7 @@ class Room extends HActiveRecordContentContainer implements ISearchable
     {
 
         // No writes allowed for archived rooms
-        if ($this->status == Space::STATUS_ARCHIVED)
+        if ($this->status == Room::STATUS_ARCHIVED)
             return false;
 
         // Take current userid if none is given
@@ -513,7 +513,7 @@ class Room extends HActiveRecordContentContainer implements ISearchable
     }
 
     /**
-     * Archive this Space
+     * Archive this Room
      */
     public function archive()
     {
@@ -522,7 +522,7 @@ class Room extends HActiveRecordContentContainer implements ISearchable
     }
 
     /**
-     * Unarchive this Space
+     * Unarchive this Room
      */
     public function unarchive()
     {
@@ -538,7 +538,7 @@ class Room extends HActiveRecordContentContainer implements ISearchable
      */
     public function getUrl($parameters = array())
     {
-        return $this->createUrl('//rooms/view', $parameters);
+        return $this->createUrl('//rooms/view/', $parameters);
     }
 
     /**
@@ -575,12 +575,12 @@ class Room extends HActiveRecordContentContainer implements ISearchable
      */
     public function checkVisibility($attribute, $params)
     {
-        if (!Yii::app()->user->canCreatePublicSpace() && ($this->$attribute == 1 || $this->$attribute == 2)) {
-            $this->addError($attribute, Yii::t('SpaceModule.models_Space', 'You cannot create public visible rooms!'));
+        if (!Yii::app()->user->canCreatePublicSpaces() && ($this->$attribute == 1 || $this->$attribute == 2)) {
+            $this->addError($attribute, Yii::t('RoomsModule.models_Room', 'You cannot create public visible rooms!'));
         }
 
-        if (!Yii::app()->user->canCreatePrivateSpace() && $this->$attribute == 0) {
-            $this->addError($attribute, Yii::t('SpaceModule.models_Space', 'You cannot create private visible rooms!'));
+        if (!Yii::app()->user->canCreatePrivateSpaces() && $this->$attribute == 0) {
+            $this->addError($attribute, Yii::t('RoomsModule.models_Room', 'You cannot create private visible rooms!'));
         }
     }
 

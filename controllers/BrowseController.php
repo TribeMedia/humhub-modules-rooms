@@ -51,7 +51,7 @@ class BrowseController extends Controller
         $limit = (int) Yii::app()->request->getParam('limit', HSetting::Get('paginationSize'));
 
         $searchResultSet = Yii::app()->search->find($keyword, [
-            'model' => 'Space',
+            'model' => 'Room',
             'page' => $page,
             'pageSize' => $limit
         ]);

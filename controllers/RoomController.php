@@ -142,7 +142,7 @@ class RoomController extends Controller {
     public function adminOnly()
     {
         if (!$this->getRoom()->isAdmin())
-            throw new CHttpException(403, 'Access denied - Space Administrator only!');
+            throw new CHttpException(403, 'Access denied - Room Administrator only!');
     }
 
     /**
@@ -153,7 +153,7 @@ class RoomController extends Controller {
         $room = $this->getRoom();
 
         if (!$room->isRoomOwner() && !Yii::app()->user->isAdmin())
-            throw new CHttpException(403, 'Access denied - Space Owner only!');
+            throw new CHttpException(403, 'Access denied - Room Owner only!');
     }
 
 }
