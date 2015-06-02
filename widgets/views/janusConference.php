@@ -2,7 +2,7 @@
     <div class="row">
         <div class="col-md-12">
             <div class="page-header">
-                <h1>Plugin Demo: Video MCU
+                <h1>Optimized Video Conference
                     <button class="btn btn-default" autocomplete="off" id="start">Start</button>
                 </h1>
             </div>
