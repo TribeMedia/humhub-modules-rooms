@@ -24,6 +24,7 @@ class RoomConferenceWidget extends HWidget {
         //Yii::app()->clientScript->registerScriptFile($assetStrophePrefix . '/strophe.disco.min.js');
         //Yii::app()->clientScript->registerScriptFile($assetStrophePrefix . '/strophe.caps.jsonly.min.js');
         Yii::app()->clientScript->registerScriptFile($assetLibsPrefix . '/bootbox.min.js');
+        Yii::app()->clientScript->registerScriptFile($assetLibsPrefix . '/jquery-migrate-1.2.1.js');
         //Yii::app()->clientScript->registerScriptFile($assetLibsPrefix . '/tooltip.js');
         //Yii::app()->clientScript->registerScriptFile($assetLibsPrefix . '/popover.js');
         //Yii::app()->clientScript->registerScriptFile($assetLibsPrefix . '/toastr.js');
