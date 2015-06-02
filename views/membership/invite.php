@@ -69,7 +69,7 @@
         </div>
         <div class="modal-footer">
 
-            <?php echo HHtml::ajaxButton(Yii::t('RoomsModule.views_room_invite', 'Send'), array('//rooms/rooms/invite', 'sguid' => $room->guid), array(
+            <?php echo HHtml::ajaxButton(Yii::t('RoomsModule.views_room_invite', 'Send'), array('//rooms/membership/invite', 'sguid' => $room->guid), array(
                 'type' => 'POST',
                 'beforeSend' => 'function(){ setModalLoader(); }',
                 'success' => 'function(html){ $("#globalModal").html(html); }',

@@ -9,7 +9,7 @@
 class RoomModelMembershipBehavior extends CActiveRecordBehavior
 {
 
-    private $_spaceOwner = null;
+    private $_roomOwner = null;
 
     /**
      * Checks if given Userid is Member of this Room.
@@ -77,7 +77,7 @@ class RoomModelMembershipBehavior extends CActiveRecordBehavior
         $this->getOwner()->created_by = $userId;
         $this->getOwner()->save();
 
-        $this->_spaceOwner = null;
+        $this->_roomOwner = null;
 
         return true;
     }
@@ -90,12 +90,12 @@ class RoomModelMembershipBehavior extends CActiveRecordBehavior
     public function getRoomOwner()
     {
 
-        if ($this->_spaceOwner != null) {
-            return $this->_spaceOwner;
+        if ($this->_roomOwner != null) {
+            return $this->_roomOwner;
         }
 
-        $this->_spaceOwner = User::model()->findByPk($this->getOwner()->created_by);
-        return $this->_spaceOwner;
+        $this->_roomOwner = User::model()->findByPk($this->getOwner()->created_by);
+        return $this->_roomOwner;
     }
 
     /**
@@ -184,9 +184,9 @@ class RoomModelMembershipBehavior extends CActiveRecordBehavior
             $userInvite->email = $email;
             $userInvite->source = UserInvite::SOURCE_INVITE;
             $userInvite->user_originator_id = $originatorUserId;
-            $userInvite->space_invite_id = $this->getOwner()->id;
+            $userInvite->room_invite_id = $this->getOwner()->id;
             $userInvite->save();
-            $userInvite->sendInviteMail();
+            $this->sendInviteMail($userInvite);
 
             // There is a pending registration
             // Steal it und send mail again
@@ -194,11 +194,36 @@ class RoomModelMembershipBehavior extends CActiveRecordBehavior
             // so we take the last one
         } else {
             $userInvite->user_originator_id = $originatorUserId;
-            $userInvite->space_invite_id = $this->getOwner()->id;
+            $userInvite->room_invite_id = $this->getOwner()->id;
             $userInvite->save();
-            $userInvite->sendInviteMail();
+            //$userInvite->sendInviteMail();
+            $this->sendInviteMail($userInvite);
         }
         return true;
+    }
+
+    public function sendInviteMail($userInvite) {
+
+        // Switch to systems default language
+        Yii::app()->language = HSetting::Get('defaultLanguage');
+
+        $message = new HMailMessage();
+        $message->view = "application.modules.rooms.views.mails.UserInviteRoom";
+        $message->addFrom(HSetting::Get('systemEmailAddress', 'mailing'), HSetting::Get('systemEmailName', 'mailing'));
+        $message->addTo($userInvite->email);
+        $message->subject = Yii::t('RoomsModule.views_mails_UserInviteRoom', 'Room Invite');
+        $message->setBody(array(
+            'originator' => $userInvite->userOriginator,
+            'originatorName' => $userInvite->userOriginator->displayName,
+            'token' => $userInvite->token,
+            'roomName' => $this->getOwner()->name,
+        ), 'text/html');
+        Yii::app()->mail->send($message);
+
+        // Switch back to users language
+        if (Yii::app()->user->language !== "") {
+            Yii::app()->language = Yii::app()->user->language;
+        }
     }
 
     /**

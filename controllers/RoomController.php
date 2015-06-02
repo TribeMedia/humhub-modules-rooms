@@ -82,9 +82,6 @@ class RoomController extends Controller {
 
             if ($model->validate() && $model->save()) {
 
-                // Save in this user variable, that the workspace was new created
-                Yii::app()->user->setState('r', 'created');
-
                 // Redirect to the new created Room
                 $this->htmlRedirect($model->getUrl());
             }

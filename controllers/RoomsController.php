@@ -194,64 +194,6 @@ class RoomsController extends ContentContainerController {
     }
 
     /**
-     * Invite New Members to this workspace
-     */
-    public function actionInvite()
-    {
-
-        $room = $this->getRoom();
-
-        // Check Permissions to Invite
-        if (!$room->canInvite()) {
-            throw new CHttpException(403, 'Access denied - You cannot invite members!');
-        }
-
-        $model = new RoomInviteForm();
-        $model->room = $room;
-
-        if (isset($_POST['RoomInviteForm'])) {
-
-            $_POST['RoomInviteForm'] = Yii::app()->input->stripClean($_POST['RoomInviteForm']);
-            $model->attributes = $_POST['RoomInviteForm'];
-
-            if ($model->validate()) {
-
-                // check if both invite inputs are empty
-                if ($model->invite == "" && $model->inviteExternal == "") {
-
-                } else {
-
-                    // Invite existing members
-                    foreach ($model->getInvites() as $user) {
-                        $room->inviteMember($user->id, Yii::app()->user->id);
-                        $statusInvite = $room->getMembership($user->id)->status;
-                    }
-
-                    if (HSetting::Get('internalUsersCanInvite', 'authentication_internal')) {
-                        // Invite non existing members
-                        foreach ($model->getInvitesExternal() as $email) {
-                            $statusInvite = ($room->inviteMemberByEMail($email, Yii::app()->user->id)) ? RoomMembership::STATUS_INVITED : false;
-                        }
-                    }
-
-                    // close modal
-                    //$this->renderModalClose();
-
-                    $output = $this->renderPartial('statusInvite', array('status' => $statusInvite));
-                    Yii::app()->clientScript->render($output);
-                    echo $output;
-                    Yii::app()->end();
-                }
-            }
-        }
-
-        $output = $this->renderPartial('invite', array('model' => $model, 'room' => $room));
-        Yii::app()->clientScript->render($output);
-        echo $output;
-        Yii::app()->end();
-    }
-
-    /**
      * When a user clicks on the Accept Invite Link, this action is called.
      * After this the user should be member of this workspace.
      */
