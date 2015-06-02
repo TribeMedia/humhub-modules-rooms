@@ -1,3 +1,16 @@
+<script lang="javascript" type="text/javascript">
+    //function getTribeRoomName() {
+
+      //  return '<?php echo CHtml::encode($room->name); ?>';
+    //}
+
+    function getParameterName(name) {
+        var match = RegExp('[?&]' + name + '=([^&]*)').exec(window.location.search);
+        return match && decodeURIComponent(match[1].replace(/\+/g, ' '));
+    }
+
+</script>
+<div id="call-wrapper">
 <div id="welcome_page">
     <div id="welcome_page_header">
         <a target="_new">
@@ -264,4 +277,5 @@
         <button id="updateSettings" data-i18n="settings.update"></button>
     </div>
     <a id="downloadlog" data-container="body" data-toggle="popover" data-placement="right" data-i18n="[data-content]downloadlogs" ><i class="fa fa-cloud-download"></i></a>
+</div>
 </div>

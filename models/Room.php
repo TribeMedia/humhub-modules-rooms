@@ -575,13 +575,13 @@ class Room extends HActiveRecordContentContainer implements ISearchable
      */
     public function checkVisibility($attribute, $params)
     {
-        if (!Yii::app()->user->canCreatePublicSpaces() && ($this->$attribute == 1 || $this->$attribute == 2)) {
+        if (!Yii::app()->user->isAdmin() && ($this->$attribute == 1 || $this->$attribute == 2)) {
             $this->addError($attribute, Yii::t('RoomsModule.models_Room', 'You cannot create public visible rooms!'));
         }
 
-        if (!Yii::app()->user->canCreatePrivateSpaces() && $this->$attribute == 0) {
+        /*if (!Yii::app()->user->canCreatePrivateSpaces() && $this->$attribute == 0) {
             $this->addError($attribute, Yii::t('RoomsModule.models_Room', 'You cannot create private visible rooms!'));
-        }
+        }*/
     }
 
     /**

@@ -2,17 +2,19 @@ var config = {
     hosts: {
         domain: 'tribe.tribemedia.io',
         //anonymousdomain: 'guest.example.com',
-        muc: 'conference.tribe.tribemedia.io', // FIXME: use XEP-0030
-        bridge: 'jitsi-videobridge.tribe.tribemedia.io', // FIXME: use XEP-0030
+        muc: 'conference.tribe.tribemedia.io',
+        //muc: 'muc.localhost', // FIXME: use XEP-0030
+        bridge: 'jitsi-videobridge.localhost', // FIXME: use XEP-0030
         //jirecon: 'jirecon.jitsi-meet.example.com',
         //call_control: 'callcontrol.jitsi-meet.example.com',
         focus: 'focus.tribe.tribemedia.io' //- defaults to 'focus.jitsi-meet.example.com'
     },
-  getroomnode: function (path) { return "boogie"; },
+  //getroomnode: function (path) { return getTribeRoomName(); },
   useStunTurn: true, // use XEP-0215 to fetch STUN and TURN server
 //  useIPv6: true, // ipv6 support. use at your own risk
     useNicks: false,
-    bosh: '//tribe.tribemedia.io/http-bind', // FIXME: use xep-0156 for that
+    //bosh: '//localhost/http-bind', // FIXME: use xep-0156 for that
+    bosh: '//tribe.tribemedia.io/http-bind',
     clientNode: 'https://tribe.tribemedia.io/jitsimeet', // The name of client node advertised in XEP-0115 'c' stanza
     focusUserJid: 'focus@auth.tribe.tribemedia.io', // The real JID of focus participant - can be overridden here
     //defaultSipNumber: '', // Default SIP number

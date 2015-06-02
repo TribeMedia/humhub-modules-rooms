@@ -1593,8 +1593,10 @@ var VideoLayout = (function (my) {
      */
     my.resizeLargeVideoContainer = function () {
         Chat.resizeChat();
-        var availableHeight = window.innerHeight;
-        var availableWidth = UIUtil.getAvailableVideoWidth();
+        //var availableHeight = window.innerHeight;
+        var availableHeight = $('#call-wrapper').parent().height();
+        var availableWidth = $('#call-wrapper').parent().width();
+        //var availableWidth = $('#call-wrapper').parent().height();
 
         if (availableWidth < 0 || availableHeight < 0) return;
 

@@ -294,7 +294,8 @@ function bindEvents()
 
 UI.start = function (init) {
     document.title = interfaceConfig.APP_NAME;
-    if(config.enableWelcomePage && window.location.pathname == "/" &&
+    var roomGuid = getParameterName('sguid');
+    if(config.enableWelcomePage && roomGuid == null && // window.location.pathname == "/" &&
         (!window.localStorage.welcomePageDisabled || window.localStorage.welcomePageDisabled == "false"))
     {
         $("#videoconference_page").hide();
@@ -353,7 +354,7 @@ UI.start = function (init) {
         dump(event.target);
     });
 
-    if(config.enableWelcomePage && window.location.pathname == "/" &&
+    if(config.enableWelcomePage && roomGuid == null && // window.location.pathname == "/" &&
         (!window.localStorage.welcomePageDisabled || window.localStorage.welcomePageDisabled == "false"))
     {
         $("#videoconference_page").hide();
@@ -630,7 +631,7 @@ UI.generateRoomName = function() {
     if(roomName)
         return roomName;
     var roomnode = null;
-    var path = window.location.pathname;
+    var path = getParameterName('sguid');
 
     // determinde the room node from the url
     // TODO: just the roomnode or the whole bare jid?

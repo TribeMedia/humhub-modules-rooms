@@ -207,7 +207,7 @@ class RoomsController extends ContentContainerController {
         }
 
         $model = new RoomInviteForm();
-        $model->space = $room;
+        $model->room = $room;
 
         if (isset($_POST['RoomInviteForm'])) {
 
@@ -245,7 +245,7 @@ class RoomsController extends ContentContainerController {
             }
         }
 
-        $output = $this->renderPartial('invite', array('model' => $model, 'space' => $room));
+        $output = $this->renderPartial('invite', array('model' => $model, 'room' => $room));
         Yii::app()->clientScript->render($output);
         echo $output;
         Yii::app()->end();
