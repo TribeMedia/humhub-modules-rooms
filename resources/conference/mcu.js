@@ -83,6 +83,16 @@ $(document).ready(function() {
             janus = new Janus(
                 {
                     server: server,
+                    iceServers:  [
+                        {
+                            'url': 'stun:stun.l.google.com:19302'
+                        },
+                        {
+                            'url': 'turn:tribe.tribemedia.io:3478',
+                            'credential': 'TRIBEMEDIA',
+                            'username': 'tribemedia'
+                        },
+                    ],
                     success: function() {
                         // Attach to video MCU test plugin
                         janus.attach(
