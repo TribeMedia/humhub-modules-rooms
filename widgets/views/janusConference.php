@@ -9,18 +9,9 @@
             <div class="container" id="details">
                 <div class="row">
                     <div class="col-md-12">
-                        <h3>Demo details</h3>
-                        <p>This demo is an example of how you can use the Video MCU plugin to
-                            implement a simple videoconferencing application. In particular, this
-                            demo page allows you to have up to 6 active participants at the same time:
-                            more participants joining the room will be instead just passive users.</p>
-                        <p>To use the demo, just insert a username to join the default room that
-                            is configured. This will add you to the list of participants, and allow
-                            you to automatically send your audio/video frames and receive the other
-                            participants' feeds. The other participants will appear in separate
-                            panels, whose title will be the names they chose when registering at
-                            the demo.</p>
-                        <p>Press the <code>Start</code> button above to launch the demo.</p>
+                        <h3>Room details</h3>
+                        <p>This is a multi-user conference.</p>
+                        <p>Press the <code>Start</code> button above to launch the conference.</p>
                     </div>
                 </div>
             </div>
