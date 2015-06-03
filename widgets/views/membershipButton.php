@@ -8,7 +8,7 @@ if ($membership === null) {
         }
     }
 } elseif ($membership->status == RoomMembership::STATUS_INVITED) {
-    echo HHtml::link(Yii::t('RoomsModule.widgets_views_membershipButton', 'Accept Invite'), $room->createUrl('//rooms/rooms/inviteAccept'), array('class' => 'btn btn-primary'));
+    echo HHtml::link(Yii::t('RoomsModule.widgets_views_membershipButton', 'Accept Invite'), $room->createUrl('//rooms/membership/inviteAccept'), array('class' => 'btn btn-primary'));
     echo HHtml::link(Yii::t('RoomsModule.widgets_views_membershipButton', 'Deny Invite'), $room->createUrl('//rooms/rooms/revokeMembership'), array('class' => 'btn btn-primary'));
 } elseif ($membership->status == RoomMembership::STATUS_APPLICANT) {
     echo HHtml::link(Yii::t('RoomsModule.widgets_views_membershipButton', 'Cancel pending membership application'), $room->createUrl('//rooms/rooms/revokeMembership'), array('class' => 'btn btn-primary'));

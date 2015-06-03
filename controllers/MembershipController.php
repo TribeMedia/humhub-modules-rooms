@@ -107,4 +107,25 @@ class MembershipController extends Controller {
         Yii::app()->end();
     }
 
+    public function actionInviteAccept()
+    {
+
+        // Get Current Room
+        $room = $this->getRoom();
+
+        // Load Pending Membership
+        $membership = RoomMembership::model()->findByAttributes(array('user_id' => Yii::app()->user->id, 'room_id' => $room->id));
+        if ($membership == null) {
+            throw new CHttpException(404, Yii::t('RoomsModule.controllers_RoomsController', 'There is no pending invite!'));
+        }
+
+        // Check there are really an Invite
+        if ($membership->status == RoomMembership::STATUS_INVITED) {
+            $room->addMember(Yii::app()->user->id);
+            //RoomInviteAcceptedNotification::fire($membership->originator_user_id, Yii::app()->user, $room);
+        }
+
+        $this->redirect($room->getUrl());
+    }
+
 }
